@@ -1,12 +1,12 @@
-package ru.nmorf.car.backend.dao.repository.entity;
+package ru.nmorf.car.backend.dao.repository.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.nmorf.car.backend.security.type.Role;
+import ru.nmorf.car.backend.security.type.Status;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 
 @Entity
@@ -29,7 +29,11 @@ public class AppUserEntity {
             nullable = false,
             unique = true)
     private String email;
-    @ManyToMany(fetch = FetchType.LAZY)
-    @Column(name = "id")
-    private Collection<RoleEntity> roles = new ArrayList<>();
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "user_status")
+    private Status status;
+
 }
