@@ -30,6 +30,7 @@ public class JwtTokenProvider {
     private String securityKey;
     @Value("${jwt.header}")
     private String authHeader;
+    private final String CLAIM_ROLE = "role";
 
     @Autowired
     public JwtTokenProvider(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
@@ -67,7 +68,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, securityKey)
                 .compact();
         tokens.put("refresh_token", refreshToken);
-        claims.put("role", role.name());
+        claims.put(CLAIM_ROLE, role.name());
         String accessToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -103,5 +104,14 @@ public class JwtTokenProvider {
 
     public Optional<String> resolveToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(authHeader));
+    }
+
+    public boolean isRefreshToken(String token) {
+         String user_role = (String) Jwts.parser()
+                    .setSigningKey(securityKey)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get(CLAIM_ROLE);
+         return user_role == null;
     }
 }

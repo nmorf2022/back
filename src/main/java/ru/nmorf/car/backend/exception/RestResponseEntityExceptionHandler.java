@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.nmorf.car.backend.exception.impl.TokenIsEmptyException;
+import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
 import ru.nmorf.car.backend.exception.impl.TokenValidationException;
 
 @RestControllerAdvice
@@ -28,5 +30,17 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(value = {TokenValidationException.class})
     public String handleException(TokenValidationException ex) {
         return "Authentication problems";
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {TokenIsEmptyException.class})
+    public String handleException(TokenIsEmptyException ex) {
+        return "Token is empty";
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {TokenIsNotRefreshTypeException.class})
+    public String handleException(TokenIsNotRefreshTypeException ex) {
+        return "Token for refresh must be refresh token";
     }
 }

@@ -9,6 +9,8 @@ import ru.nmorf.car.backend.dao.repository.IAppUserEntityRepo;
 import ru.nmorf.car.backend.dao.repository.mapper.IAppUserEntityMapper;
 import ru.nmorf.car.backend.entity.AuthData;
 import ru.nmorf.car.backend.entity.SecurityUser;
+import ru.nmorf.car.backend.exception.impl.TokenIsEmptyException;
+import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
 import ru.nmorf.car.backend.security.JwtTokenProvider;
 import ru.nmorf.car.backend.service.IAuthService;
 
@@ -38,8 +40,23 @@ public class AuthService implements IAuthService {
     public Map<String, String> login(AuthData authData) {
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(authData.getEmail(), authData.getPassword()));
+        return createTokens(authData.getEmail());
+    }
+
+    @Override
+    public Map<String, String> refresh(Optional<String> tokenOpt) {
+        String token = tokenOpt.orElseThrow(TokenIsEmptyException::new);
+        if(jwtTokenProvider.isRefreshToken(token)) {
+            String username = jwtTokenProvider.getUsername(token);
+            return createTokens(username);
+        } else {
+            throw new TokenIsNotRefreshTypeException();
+        }
+    }
+
+    private Map<String, String> createTokens(String username) {
         SecurityUser user = Optional
-                .ofNullable(mapper.toSecurityUser(repo.findByEmail(authData.getEmail())))
+                .ofNullable(mapper.toSecurityUser(repo.findByEmail(username)))
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         Map<String, String> response = jwtTokenProvider.createTokens(user.getEmail(), user.getRole());
         response.put("email", user.getEmail());
