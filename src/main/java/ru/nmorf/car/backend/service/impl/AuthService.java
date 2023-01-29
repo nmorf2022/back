@@ -1,6 +1,8 @@
 package ru.nmorf.car.backend.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,7 @@ import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
 import ru.nmorf.car.backend.security.JwtTokenProvider;
 import ru.nmorf.car.backend.service.IAuthService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,16 +26,20 @@ public class AuthService implements IAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final IAppUserEntityRepo repo;
     private final IAppUserEntityMapper mapper;
+    private final StringRedisTemplate redisTemplate;
+    @Value("${redis.jwt_table}")
+    private String redisTable;
 
     @Autowired
     public AuthService(AuthenticationManager authenticationManager,
                        JwtTokenProvider jwtTokenProvider,
                        IAppUserEntityRepo repo,
-                       IAppUserEntityMapper mapper) {
+                       IAppUserEntityMapper mapper, StringRedisTemplate redisTemplate) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.repo = repo;
         this.mapper = mapper;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -43,13 +50,24 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public Map<String, String> refresh(String token) {
+    public Map<String, String> refresh(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
         if(jwtTokenProvider.isRefreshToken(token)) {
             String username = jwtTokenProvider.getUsername(token);
+            String key =  redisTable + ":" + username;
+            redisTemplate.delete(key);
             return createTokens(username);
         } else {
             throw new TokenIsNotRefreshTypeException();
         }
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        String username = jwtTokenProvider.getUsername(token);
+        String key =  redisTable + ":" + username;
+        redisTemplate.delete(key);
     }
 
     private Map<String, String> createTokens(String username) {

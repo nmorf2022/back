@@ -37,9 +37,7 @@ public class JwtTokenFilter extends GenericFilterBean {
             if(token.equals("")) {
                 ((HttpServletResponse) servletResponse).sendError(HttpStatus.BAD_REQUEST.value(),
                         "The request does not have an authorization header");
-            } else
-            //TODO запрос в Redis
-            if (jwtTokenProvider.isTokenValid(token)) {
+            } else if (jwtTokenProvider.isTokenValid(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {

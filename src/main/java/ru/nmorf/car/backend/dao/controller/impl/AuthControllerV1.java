@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.nmorf.car.backend.dao.controller.mapper.IAuthMapper;
 import ru.nmorf.car.backend.dao.controller.model.AuthRequestDTO;
 import ru.nmorf.car.backend.dao.controller.model.TokensDTO;
-import ru.nmorf.car.backend.security.JwtTokenProvider;
 import ru.nmorf.car.backend.service.IAuthService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,17 +21,14 @@ public class AuthControllerV1 {
 
     private final IAuthMapper authMapper;
     private final IAuthService authService;
-    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Autowired
     public AuthControllerV1(
             IAuthMapper authMapper,
-            IAuthService authService,
-            JwtTokenProvider jwtTokenProvider) {
+            IAuthService authService) {
         this.authMapper = authMapper;
         this.authService = authService;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/login")
@@ -45,14 +41,13 @@ public class AuthControllerV1 {
     @PostMapping("/refresh")
     public TokensDTO refreshTokens(HttpServletRequest request) {
         return authMapper.
-                toTokensDTO(authService
-                        .refresh(jwtTokenProvider.resolveToken(request)));
+                toTokensDTO(authService.refresh(request));
     }
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         securityContextLogoutHandler.logout(request, response, null);
-        //TODO удалить записи из Redis
+        authService.logout(request);
     }
 }

@@ -8,6 +8,7 @@ import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +23,7 @@ import java.util.*;
 public class JwtTokenProvider {
 
     private final UserDetailsService userDetailsService;
+    private final StringRedisTemplate redisTemplate;
     @Value("${jwt.refresh_token_ttl}")
     private Long refreshTokenTTLInSeconds;
     @Value("${jwt.access_token_ttl}")
@@ -32,11 +34,14 @@ public class JwtTokenProvider {
     private String authHeader;
     @Value("${jwt.token_type}")
     private String tokenType;
+    @Value("${redis.jwt_table}")
+    private String redisTable;
     private final String CLAIM_ROLE = "role";
 
     @Autowired
-    public JwtTokenProvider(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+    public JwtTokenProvider(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, StringRedisTemplate redisTemplate) {
         this.userDetailsService = userDetailsService;
+        this.redisTemplate = redisTemplate;
     }
 
     @PostConstruct
@@ -78,13 +83,21 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, securityKey)
                 .compact();
         tokens.put("access_token", accessToken);
+        String key =  redisTable + ":" + username;
+        redisTemplate.opsForSet().add(key, refreshToken, accessToken);
         return tokens;
     }
 
     public boolean isTokenValid(String token) {
         try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(securityKey).parseClaimsJws(token);
-            return !claimsJws.getBody().getExpiration().before(new Date());
+            Boolean isFresh = !claimsJws.getBody().getExpiration().before(new Date());
+            String username = getUsername(token);
+            String key =  redisTable + ":" + username;
+            Boolean isNotRejected =  Optional
+                    .ofNullable(redisTemplate.opsForSet().isMember(key, token))
+                    .orElse(false);
+            return isFresh && isNotRejected;
         } catch (JwtException | IllegalArgumentException e) {
             //TODO log
         }
