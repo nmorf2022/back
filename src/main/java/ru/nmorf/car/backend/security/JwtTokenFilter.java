@@ -33,9 +33,7 @@ public class JwtTokenFilter extends GenericFilterBean {
         String path = request.getRequestURI();
         if(!path.equals("/api/v1/auth/login") &&
                 !path.equals("/api/v1/health")) {
-            String token = jwtTokenProvider
-                    .resolveToken(request)
-                    .orElse("");
+            String token = jwtTokenProvider.resolveToken(request);
             if(token.equals("")) {
                 ((HttpServletResponse) servletResponse).sendError(HttpStatus.BAD_REQUEST.value(),
                         "The request does not have an authorization header");

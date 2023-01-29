@@ -30,6 +30,8 @@ public class JwtTokenProvider {
     private String securityKey;
     @Value("${jwt.header}")
     private String authHeader;
+    @Value("${jwt.token_type}")
+    private String tokenType;
     private final String CLAIM_ROLE = "role";
 
     @Autowired
@@ -102,8 +104,12 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public Optional<String> resolveToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(authHeader));
+    public String resolveToken(HttpServletRequest request) {
+        String token = Optional.ofNullable(request.getHeader(authHeader)).orElse("");
+        if(!token.equals("")){
+            token = token.substring(tokenType.length() + 1);
+        }
+        return token;
     }
 
     public boolean isRefreshToken(String token) {

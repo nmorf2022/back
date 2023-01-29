@@ -9,7 +9,6 @@ import ru.nmorf.car.backend.dao.repository.IAppUserEntityRepo;
 import ru.nmorf.car.backend.dao.repository.mapper.IAppUserEntityMapper;
 import ru.nmorf.car.backend.entity.AuthData;
 import ru.nmorf.car.backend.entity.SecurityUser;
-import ru.nmorf.car.backend.exception.impl.TokenIsEmptyException;
 import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
 import ru.nmorf.car.backend.security.JwtTokenProvider;
 import ru.nmorf.car.backend.service.IAuthService;
@@ -44,8 +43,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public Map<String, String> refresh(Optional<String> tokenOpt) {
-        String token = tokenOpt.orElseThrow(TokenIsEmptyException::new);
+    public Map<String, String> refresh(String token) {
         if(jwtTokenProvider.isRefreshToken(token)) {
             String username = jwtTokenProvider.getUsername(token);
             return createTokens(username);
