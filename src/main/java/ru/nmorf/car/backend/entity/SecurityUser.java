@@ -1,5 +1,6 @@
 package ru.nmorf.car.backend.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import ru.nmorf.car.backend.security.type.Status;
 import java.util.Collection;
 
 @Data
+@Builder
 public class SecurityUser implements UserDetails {
     private String name;
     private String password;
