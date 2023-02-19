@@ -2,7 +2,8 @@ package ru.nmorf.car.backend.security.type;
 
 public enum Permission {
     USERS_READ("users:read"),
-    USERS_WRITE("users:write");
+    USERS_WRITE("users:write"),
+    PASSWORD_CHANGE("password:change");
 
     private final String permission;
 

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.nmorf.car.backend.exception.impl.InvalidPasswordException;
 import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
 import ru.nmorf.car.backend.exception.impl.TokenValidationException;
 
@@ -36,5 +37,11 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(value = {TokenIsNotRefreshTypeException.class})
     public String handleException(TokenIsNotRefreshTypeException ex) {
         return "Token for refresh must be refresh token";
+    }
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(value = {InvalidPasswordException.class})
+    public String handleException(InvalidPasswordException ex) {
+        return "Old password is not correct";
     }
 }
