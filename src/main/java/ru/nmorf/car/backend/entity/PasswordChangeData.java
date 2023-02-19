@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AuthData {
-    private String email;
-    private String password;
+public class PasswordChangeData {
+    String oldPassword;
+    String newPassword;
 }
