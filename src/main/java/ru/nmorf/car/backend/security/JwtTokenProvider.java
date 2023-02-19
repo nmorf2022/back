@@ -83,25 +83,35 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, securityKey)
                 .compact();
         tokens.put("access_token", accessToken);
-        String key =  redisTable + ":" + username;
-        redisTemplate.opsForSet().add(key, refreshToken, accessToken);
+        String redisKey =  redisTable + ":" + username + ":" + now.getTime()/1000;
+        redisTemplate.opsForSet().add(redisKey, refreshToken, accessToken);
         return tokens;
     }
 
     public boolean isTokenValid(String token) {
         try {
+            String redisKey = getRedisKey(token);
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(securityKey).parseClaimsJws(token);
-            Boolean isFresh = !claimsJws.getBody().getExpiration().before(new Date());
-            String username = getUsername(token);
-            String key =  redisTable + ":" + username;
-            Boolean isNotRejected =  Optional
-                    .ofNullable(redisTemplate.opsForSet().isMember(key, token))
+            boolean isFresh = !claimsJws.getBody().getExpiration().before(new Date());
+            boolean isNotRejected =  Optional
+                    .ofNullable(redisTemplate.opsForSet().isMember(redisKey, token))
                     .orElse(false);
-            return isFresh && isNotRejected;
+            if (isFresh && isNotRejected) {
+                return true;
+            } else {
+                redisTemplate.opsForSet().remove(redisKey, token);
+                return false;
+            }
         } catch (JwtException | IllegalArgumentException e) {
             //TODO log
         }
         return false;
+    }
+
+    public String getRedisKey(String token) {
+        String username = getUsername(token);
+        long createTime = getCreateTime(token) / 1000;
+        return redisTable + ":" + username + ":" + createTime;
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
@@ -115,6 +125,15 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public Long getCreateTime(String token) {
+        return Jwts.parser()
+                .setSigningKey(securityKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getIssuedAt()
+                .getTime();
     }
 
     public String resolveToken(HttpServletRequest request) {
