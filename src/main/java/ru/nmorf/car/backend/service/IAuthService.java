@@ -9,4 +9,5 @@ public interface IAuthService {
     Map<String, String> login(AuthData authData);
     Map<String, String> refresh(HttpServletRequest request);
     void logout(HttpServletRequest request);
+    void logoutAll(HttpServletRequest request);
 }

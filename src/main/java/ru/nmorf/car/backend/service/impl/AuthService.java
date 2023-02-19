@@ -18,6 +18,7 @@ import ru.nmorf.car.backend.service.IAuthService;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AuthService implements IAuthService {
@@ -54,7 +55,8 @@ public class AuthService implements IAuthService {
         String token = jwtTokenProvider.resolveToken(request);
         if(jwtTokenProvider.isRefreshToken(token)) {
             String username = jwtTokenProvider.getUsername(token);
-            String key =  redisTable + ":" + username;
+            long createTime = jwtTokenProvider.getCreateTime(token);
+            String key =  redisTable + ":" + username + ":" + createTime/1000;
             redisTemplate.delete(key);
             return createTokens(username);
         } else {
@@ -65,9 +67,19 @@ public class AuthService implements IAuthService {
     @Override
     public void logout(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
+        String redisKey = jwtTokenProvider.getRedisKey(token);
+        redisTemplate.delete(redisKey);
+    }
+
+    @Override
+    public void logoutAll(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
         String username = jwtTokenProvider.getUsername(token);
-        String key =  redisTable + ":" + username;
-        redisTemplate.delete(key);
+        String redisKey =  redisTable + ":" + username + ":*";
+        Set<String> keys = redisTemplate.keys(redisKey);
+        if(keys != null){
+            redisTemplate.delete(keys);
+        }
     }
 
     private Map<String, String> createTokens(String username) {

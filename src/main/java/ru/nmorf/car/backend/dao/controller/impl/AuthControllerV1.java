@@ -50,4 +50,11 @@ public class AuthControllerV1 {
         securityContextLogoutHandler.logout(request, response, null);
         authService.logout(request);
     }
+
+    @PostMapping("/logout_all")
+    public void logoutAll(HttpServletRequest request, HttpServletResponse response) {
+        SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
+        securityContextLogoutHandler.logout(request, response, null);
+        authService.logoutAll(request);
+    }
 }
