@@ -12,7 +12,6 @@ import ru.nmorf.car.backend.security.type.Status;
 import ru.nmorf.car.backend.service.IChangeUserService;
 
 @Service
-@Transactional
 public class ChangeUserService implements IChangeUserService {
 
     private final IAppUserEntityRepo userEntityRepo;
@@ -26,6 +25,7 @@ public class ChangeUserService implements IChangeUserService {
     }
 
     @Override
+    @Transactional
     public Integer changeEntrantToCadet(SecurityUser user) {
         SecurityUser changeUser = userEntityMapper
                 .toSecurityUser(userEntityRepo.findByEmail(user.getEmail()));
@@ -34,6 +34,6 @@ public class ChangeUserService implements IChangeUserService {
                 changeUser.getStatus() != Status.ACTIVE) {
             throw new SwitchToCadetNotAvailableException();
         }
-        return userEntityRepo.setRole(Role.CADET, changeUser.getEmail());
+        return userEntityRepo.setRole(Role.CADET.name(), changeUser.getEmail());
     }
 }

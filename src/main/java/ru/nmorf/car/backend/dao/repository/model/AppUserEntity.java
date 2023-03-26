@@ -14,6 +14,8 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Table(name = "app_user")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorValue("APP_USER")
 public class AppUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
