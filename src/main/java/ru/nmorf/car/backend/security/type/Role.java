@@ -9,7 +9,9 @@ public enum Role {
     CADET(Set.of(Permission.PASSWORD_CHANGE)),
     INSTRUCTOR(Set.of(Permission.PASSWORD_CHANGE)),
     ENTRANT(Set.of(Permission.PASSWORD_CHANGE)),
-    ADMIN(Set.of(Permission.PASSWORD_CHANGE));
+    ADMIN(Set.of(Permission.PASSWORD_CHANGE,
+            Permission.CREATE_ENTRANT,
+            Permission.CREATE_INSTRUCTOR));
 
     private final Set<Permission> permissions;
 

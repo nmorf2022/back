@@ -8,4 +8,5 @@ import ru.nmorf.car.backend.entity.SecurityUser;
 public interface IAppUserEntityMapper {
 
     SecurityUser toSecurityUser(AppUserEntity user);
+    AppUserEntity toAppUserEntity(SecurityUser user);
 }

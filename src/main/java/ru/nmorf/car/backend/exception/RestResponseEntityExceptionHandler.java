@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.nmorf.car.backend.exception.impl.InvalidPasswordException;
 import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
 import ru.nmorf.car.backend.exception.impl.TokenValidationException;
+import ru.nmorf.car.backend.exception.impl.UserEmailAlreadyExistsException;
 
 
 @RestControllerAdvice
@@ -44,4 +45,11 @@ public class RestResponseEntityExceptionHandler {
     public String handleException(InvalidPasswordException ex) {
         return "Old password is not correct";
     }
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(value = {UserEmailAlreadyExistsException.class})
+    public String handleException(UserEmailAlreadyExistsException ex) {
+        return "User with this email already exists";
+    }
+
 }
