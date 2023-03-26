@@ -11,7 +11,8 @@ public enum Role {
     ENTRANT(Set.of(Permission.PASSWORD_CHANGE)),
     ADMIN(Set.of(Permission.PASSWORD_CHANGE,
             Permission.CREATE_ENTRANT,
-            Permission.CREATE_INSTRUCTOR));
+            Permission.CREATE_INSTRUCTOR,
+            Permission.CHANGE_ENTRANT));
 
     private final Set<Permission> permissions;
 

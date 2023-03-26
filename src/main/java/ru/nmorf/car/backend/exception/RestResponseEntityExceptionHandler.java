@@ -7,10 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.nmorf.car.backend.exception.impl.InvalidPasswordException;
-import ru.nmorf.car.backend.exception.impl.TokenIsNotRefreshTypeException;
-import ru.nmorf.car.backend.exception.impl.TokenValidationException;
-import ru.nmorf.car.backend.exception.impl.UserEmailAlreadyExistsException;
+import ru.nmorf.car.backend.exception.impl.*;
 
 
 @RestControllerAdvice
@@ -50,6 +47,12 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(value = {UserEmailAlreadyExistsException.class})
     public String handleException(UserEmailAlreadyExistsException ex) {
         return "User with this email already exists";
+    }
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(value = {SwitchToCadetNotAvailableException.class})
+    public String handleException(SwitchToCadetNotAvailableException ex) {
+        return "A user with this email cannot be a cadet because the email does not exist or is not active, or is not an applicant";
     }
 
 }
