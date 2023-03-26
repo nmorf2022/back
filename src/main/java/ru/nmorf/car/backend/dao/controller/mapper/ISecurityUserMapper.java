@@ -2,10 +2,7 @@ package ru.nmorf.car.backend.dao.controller.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.nmorf.car.backend.dao.controller.model.EntrantCreateDTO;
-import ru.nmorf.car.backend.dao.controller.model.EntrantDTO;
-import ru.nmorf.car.backend.dao.controller.model.InstructorCreateDTO;
-import ru.nmorf.car.backend.dao.controller.model.InstructorDTO;
+import ru.nmorf.car.backend.dao.controller.model.*;
 import ru.nmorf.car.backend.entity.SecurityUser;
 
 @Mapper(componentModel = "spring")
@@ -23,5 +20,6 @@ public interface ISecurityUserMapper {
 
     InstructorDTO toInstructorDTO(SecurityUser user);
 
+    SecurityUser toSecurityUser(ChangeEntrantDTO entrant);
 
 }

@@ -29,10 +29,9 @@ public class CreateUserService implements ICreateUserService {
     public SecurityUser createUser(SecurityUser user) {
         if(userEntityRepo.findByEmail(user.getEmail()) != null) {
             throw new UserEmailAlreadyExistsException();
-        }else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userEntityRepo.save(userEntityMapper.toAppUserEntity(user));
-            return user;
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userEntityRepo.save(userEntityMapper.toAppUserEntity(user));
+        return user;
     }
 }

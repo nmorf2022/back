@@ -3,7 +3,8 @@ package ru.nmorf.car.backend.security.type;
 public enum Permission {
     PASSWORD_CHANGE("password:change"),
     CREATE_INSTRUCTOR("create:instructor"),
-    CREATE_ENTRANT("create:entrant");
+    CREATE_ENTRANT("create:entrant"),
+    CHANGE_ENTRANT("change:entrant");
 
     private final String permission;
 

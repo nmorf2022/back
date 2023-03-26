@@ -1,13 +1,13 @@
 package ru.nmorf.car.backend.dao.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.nmorf.car.backend.dao.controller.mapper.ISecurityUserMapper;
-import ru.nmorf.car.backend.dao.controller.model.EntrantCreateDTO;
-import ru.nmorf.car.backend.dao.controller.model.EntrantDTO;
-import ru.nmorf.car.backend.dao.controller.model.InstructorCreateDTO;
-import ru.nmorf.car.backend.dao.controller.model.InstructorDTO;
+import ru.nmorf.car.backend.dao.controller.model.*;
+import ru.nmorf.car.backend.service.IChangeUserService;
 import ru.nmorf.car.backend.service.ICreateUserService;
 
 @RestController
@@ -15,12 +15,15 @@ import ru.nmorf.car.backend.service.ICreateUserService;
 public class AdminControllerV1 {
 
     private final ICreateUserService createUserService;
+    private final IChangeUserService changeUserService;
     private final ISecurityUserMapper securityUserMapper;
 
     @Autowired
     public AdminControllerV1(ICreateUserService createUserService,
+                             IChangeUserService changeUserService,
                              ISecurityUserMapper securityUserMapper) {
         this.createUserService = createUserService;
+        this.changeUserService = changeUserService;
         this.securityUserMapper = securityUserMapper;
     }
 
@@ -31,6 +34,15 @@ public class AdminControllerV1 {
         return securityUserMapper
                 .toEntrantDTO(createUserService
                         .createUser(securityUserMapper.toSecurityUser(requestDTO)));
+    }
+
+    @PostMapping("/change/entrant")
+    @PreAuthorize("hasAuthority('change:entrant')")
+    @ResponseBody
+    public ResponseEntity<String> changeEntrant(@RequestBody ChangeEntrantDTO requestDTO) {
+        return changeUserService
+                        .changeEntrantToCadet(securityUserMapper.toSecurityUser(requestDTO)) == 1 ?
+                new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PostMapping("/create/instructor")
