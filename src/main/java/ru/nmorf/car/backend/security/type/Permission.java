@@ -4,7 +4,7 @@ public enum Permission {
     PASSWORD_CHANGE("password:change"),
     CREATE_INSTRUCTOR("create:instructor"),
     CREATE_ENTRANT("create:entrant"),
-    CHANGE_ENTRANT("change:entrant");
+    CHANGE_ENTRANT_TO_CADET("change:entrant_to_cadet");
 
     private final String permission;
 

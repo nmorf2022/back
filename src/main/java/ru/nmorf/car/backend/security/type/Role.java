@@ -12,7 +12,7 @@ public enum Role {
     ADMIN(Set.of(Permission.PASSWORD_CHANGE,
             Permission.CREATE_ENTRANT,
             Permission.CREATE_INSTRUCTOR,
-            Permission.CHANGE_ENTRANT));
+            Permission.CHANGE_ENTRANT_TO_CADET));
 
     private final Set<Permission> permissions;
 
