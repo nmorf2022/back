@@ -27,7 +27,7 @@ public class AdminControllerV1 {
         this.securityUserMapper = securityUserMapper;
     }
 
-    @PostMapping("/create/entrant")
+    @PostMapping("/entrant")
     @PreAuthorize("hasAuthority('create:entrant')")
     @ResponseBody
     public EntrantDTO createEntrant(@RequestBody EntrantCreateDTO requestDTO) {
@@ -36,8 +36,8 @@ public class AdminControllerV1 {
                         .createUser(securityUserMapper.toSecurityUser(requestDTO)));
     }
 
-    @PostMapping("/change/entrant")
-    @PreAuthorize("hasAuthority('change:entrant')")
+    @PatchMapping("/entrant")
+    @PreAuthorize("hasAuthority('change:entrant_to_cadet')")
     @ResponseBody
     public ResponseEntity<String> changeEntrant(@RequestBody ChangeEntrantDTO requestDTO) {
         return changeUserService
@@ -45,7 +45,7 @@ public class AdminControllerV1 {
                 new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PostMapping("/create/instructor")
+    @PostMapping("/instructor")
     @PreAuthorize("hasAuthority('create:instructor')")
     @ResponseBody
     public InstructorDTO createInstructor(@RequestBody InstructorCreateDTO requestDTO) {

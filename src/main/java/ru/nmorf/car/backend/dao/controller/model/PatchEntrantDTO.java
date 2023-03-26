@@ -1,12 +1,11 @@
 package ru.nmorf.car.backend.dao.controller.model;
 
 import lombok.Data;
-import ru.nmorf.car.backend.security.type.Role;
 
 @Data
-public class EntrantDTO {
+public class PatchEntrantDTO {
+
     private String name;
     private String email;
-    private Role role;
     private String driver_category;
 }

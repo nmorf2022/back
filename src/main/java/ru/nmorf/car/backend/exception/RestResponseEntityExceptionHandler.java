@@ -54,5 +54,9 @@ public class RestResponseEntityExceptionHandler {
     public String handleException(SwitchToCadetNotAvailableException ex) {
         return "A user with this email cannot be a cadet because the email does not exist or is not active, or is not an applicant";
     }
-
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(value = {UserNotFoundException.class})
+    public String handleException(UserNotFoundException ex) {
+        return "User with this email not found";
+    }
 }

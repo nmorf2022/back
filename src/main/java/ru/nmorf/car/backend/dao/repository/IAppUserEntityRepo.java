@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.nmorf.car.backend.dao.repository.model.AppUserEntity;
-import ru.nmorf.car.backend.security.type.Role;
 
 public interface IAppUserEntityRepo extends JpaRepository<AppUserEntity, Long> {
 
@@ -12,6 +11,6 @@ public interface IAppUserEntityRepo extends JpaRepository<AppUserEntity, Long> {
 
 
     @Modifying
-    @Query("update AppUserEntity u set u.role = ?1 where u.email = ?2")
-    int setRole(Role role, String email);
+    @Query(value = "update app_user set role = ?1, dtype = ?1 where email = ?2", nativeQuery = true)
+    int setRole(String role, String email);
 }
