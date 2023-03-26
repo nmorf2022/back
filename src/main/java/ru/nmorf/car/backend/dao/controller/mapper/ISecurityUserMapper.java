@@ -16,7 +16,7 @@ public interface ISecurityUserMapper {
 
     @Mapping(target = "role", constant = "INSTRUCTOR")
     @Mapping(target = "status", constant = "ACTIVE")
-    SecurityUser toSecurityUser(InstructorCreateDTO entrant);
+    SecurityUser toSecurityUser(InstructorCreateDTO instructor);
 
     InstructorDTO toInstructorDTO(SecurityUser user);
 
