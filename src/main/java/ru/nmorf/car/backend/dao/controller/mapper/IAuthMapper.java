@@ -16,6 +16,7 @@ public abstract class IAuthMapper {
             tokensDTO.setAccess_token(src.get("access_token"));
             tokensDTO.setRefresh_token(src.get("refresh_token"));
             tokensDTO.setEmail(src.get("email"));
+            tokensDTO.setRole(src.get("role"));
         }
         catch (NullPointerException e) {
             throw new TokenValidationException();

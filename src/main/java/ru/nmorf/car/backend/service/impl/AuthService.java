@@ -88,6 +88,7 @@ public class AuthService implements IAuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         Map<String, String> response = jwtTokenProvider.createTokens(user.getEmail(), user.getRole());
         response.put("email", user.getEmail());
+        response.put("role", user.getRole().name());
         return response;
     }
 }
